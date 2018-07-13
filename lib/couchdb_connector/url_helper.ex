@@ -78,6 +78,20 @@ defmodule Couchdb.Connector.UrlHelper do
   end
 
   @doc """
+  TODO: write!
+  """
+  @spec view_url(Types.db_properties, String.t, String.t, map) :: String.t
+  def view_url db_props, design, view, query do
+    query_str =
+      if map_size(query) > 0 do
+        "?#{encode_query(query)}"
+      else
+        ""
+      end
+    "#{view_url(db_props, design, view)}#{query_str}"
+  end
+
+  @doc """
   Produces the URL to query a view for a specific integer key, using the
   provided staleness setting (either :ok or :update_after).
   """
@@ -126,4 +140,29 @@ defmodule Couchdb.Connector.UrlHelper do
   def security_url db_props do
     "#{database_url(db_props)}/_security"
   end
+
+  @doc """
+  TODO: write!
+  """
+  @spec encode_query(map) :: String.t
+  def encode_query(map) do
+    Enum.map_join(map, "&", &encode_kv_pair/1)
+  end
+
+  defp encode_kv_pair({key, _}) when is_list(key) do
+    raise ArgumentError, "encode_query/1 keys cannot be lists, got: #{inspect(key)}"
+  end
+  defp encode_kv_pair({_, value}) when is_list(value) do
+    raise ArgumentError, "encode_query/1 values cannot be lists, got: #{inspect(value)}"
+  end
+  defp encode_kv_pair({key, value}) do
+    URI.encode_www_form(Kernel.to_string(key)) <> "=" <> encode_value(value)
+  end
+  defp encode_value(value) when is_binary(value) do
+    "\"#{URI.encode_www_form(Kernel.to_string(value))}\""
+  end
+  defp encode_value(value) do
+    URI.encode_www_form(Kernel.to_string(value))
+  end
+
 end

@@ -31,6 +31,17 @@ defmodule Couchdb.Connector.View do
   end
 
   @doc """
+  Returns everything found for the given parameters in the given view. TODO: write describing glue code!
+  """
+  @spec fetch_all(Types.db_properties, String.t, String.t, map) :: {:ok, String.t} | {:error, String.t}
+  def fetch_all(db_props, design, view, query) do
+    db_props
+    |> UrlHelper.view_url(design, view, query)
+    |> HTTPoison.get!
+    |> Handler.handle_get
+  end
+
+  @doc """
   Create a view with the given JavaScript code in the given design document.
   Please note that Admin credentials are required for this operation in case
   your database uses authentication.

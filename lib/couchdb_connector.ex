@@ -104,6 +104,14 @@ defmodule Couchdb.Connector do
   end
 
   @doc """
+  Returns everything found for the given parameters in the given view. TODO: write describing glue code!
+  """
+  @spec fetch_all(Types.db_properties, String.t, String.t, map) :: {:ok, String.t} | {:error, String.t}
+  def fetch_all(db_props, design, view, query) do
+    View.fetch_all(db_props, design, view, query) |> as_map
+  end
+
+  @doc """
   Find and return one document with given key in given view. Will return a
   a Map with an empty list of documents if no document with given
   key exists.

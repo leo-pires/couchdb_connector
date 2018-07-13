@@ -16,18 +16,17 @@ defmodule Couchdb.Connector.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :httpoison, :poison],
+    [applications: [:logger, :httpoison],
      mod: {Couchdb.Connector.Supervisor, [name: :couchdb_connector_sup]}]
   end
 
   defp deps do
     [
-      {:httpoison, "~> 0.8 or ~> 0.9 or ~> 0.10"},
-      {:poison, "~> 1.5 or ~> 2.0 or ~> 3.0"},
-      {:excoveralls, "~> 0.7", only: [:dev, :test]},
-      {:credo, "~> 0.8", only: [:dev, :test]},
-      {:earmark, "~> 1.1", only: :dev},
-      {:ex_doc, "~> 0.16", only: :dev},
+      {:httpoison, "~> 0.13"},
+      {:excoveralls, "~> 0.9", only: [:dev, :test]},
+      {:credo, "~> 0.9", only: [:dev, :test]},
+      {:earmark, "~> 1.2", only: :dev},
+      {:ex_doc, "~> 0.18", only: :dev},
       {:dialyxir, "~> 0.5", only: [:dev]}
     ]
   end
