@@ -104,9 +104,9 @@ defmodule Couchdb.Connector do
   end
 
   @doc """
-  Returns everything found for the given parameters in the given view. TODO: write describing glue code!
+  TODO: write!
   """
-  @spec fetch_all(Types.db_properties, String.t, String.t, map) :: {:ok, String.t} | {:error, String.t}
+  @spec fetch_all(Types.db_properties, String.t, String.t, map | list(map)) :: {:ok, String.t} | {:error, String.t}
   def fetch_all(db_props, design, view, query) do
     View.fetch_all(db_props, design, view, query) |> as_map
   end

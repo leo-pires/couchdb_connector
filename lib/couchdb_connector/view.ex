@@ -31,14 +31,26 @@ defmodule Couchdb.Connector.View do
   end
 
   @doc """
-  Returns everything found for the given parameters in the given view. TODO: write describing glue code!
+  TODO: write!
   """
   @spec fetch_all(Types.db_properties, String.t, String.t, map) :: {:ok, String.t} | {:error, String.t}
-  def fetch_all(db_props, design, view, query) do
+  def fetch_all(db_props, design, view, query) when is_map(query) do
     db_props
     |> UrlHelper.view_url(design, view, query)
     |> HTTPoison.get!
     |> Handler.handle_get
+  end
+
+  @doc """
+  TODO: write!
+  """
+  @spec fetch_all(Types.db_properties, String.t, String.t, list(map)) :: {:ok, String.t} | {:error, String.t}
+  def fetch_all(db_props, design, view, queries) when is_list(queries) do
+    body = %{queries: queries} |> Poison.encode!
+    db_props
+    |> UrlHelper.view_url(design, view)
+    |> HTTPoison.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
+    |> Handler.handle_post
   end
 
   @doc """
