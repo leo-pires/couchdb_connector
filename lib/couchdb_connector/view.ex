@@ -128,8 +128,8 @@ defmodule Couchdb.Connector.View do
   @doc """
   TODO: write!
   """
-  @spec index(Types.db_properties, map) :: {:ok, String.t} | {:error, String.t}
-  def index(db_props, index) do
+  @spec create_index(Types.db_properties, map) :: {:ok, String.t} | {:error, String.t}
+  def create_index(db_props, index) do
     body = index |> Poison.encode!
     db_props
     |> UrlHelper.index_url
