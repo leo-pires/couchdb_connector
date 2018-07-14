@@ -20,12 +20,12 @@ defmodule Couchdb.Connector.UrlHelper do
     @default_db_properties |> Map.merge(db_props) |> do_database_server_url
   end
 
-  defp do_database_server_url db_props = %{user: nil} do
+  defp do_database_server_url db_props = %{user: nil, username: nil} do
     "#{db_props[:protocol]}://#{db_props[:hostname]}:#{db_props[:port]}"
   end
 
   defp do_database_server_url db_props do
-    "#{db_props[:protocol]}://#{db_props[:user]}:#{db_props[:password]}@#{db_props[:hostname]}:#{db_props[:port]}"
+    "#{db_props[:protocol]}://#{db_props[:user] || db_props[:username]}:#{db_props[:password]}@#{db_props[:hostname]}:#{db_props[:port]}"
   end
 
   @doc """
