@@ -106,7 +106,7 @@ defmodule Couchdb.Connector do
   @doc """
   TODO: write!
   """
-  @spec fetch_all(Types.db_properties, String.t, String.t, map | list(map)) :: {:ok, String.t} | {:error, String.t}
+  @spec fetch_all(Types.db_properties, String.t, String.t, map | list(map)) :: {:ok, map} | {:error, map}
   def fetch_all(db_props, design, view, query) do
     View.fetch_all(db_props, design, view, query) |> as_map
   end
