@@ -125,6 +125,18 @@ defmodule Couchdb.Connector.View do
     |> Handler.handle_post
   end
 
+  @doc """
+  TODO: write!
+  """
+  @spec index(Types.db_properties, map) :: {:ok, String.t} | {:error, String.t}
+  def index(db_props, index) do
+    body = index |> Poison.encode!
+    db_props
+    |> UrlHelper.index_url
+    |> HTTPoison.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
+    |> Handler.handle_post
+  end
+
   defp do_document_by_key(url) do
     url
     |> HTTPoison.get!

@@ -100,6 +100,14 @@ defmodule Couchdb.Connector.UrlHelper do
   end
 
   @doc """
+  TODO: write!
+  """
+  @spec index_url(Types.db_properties) :: String.t
+  def index_url db_props do
+    "#{database_server_url(db_props)}/#{db_props[:database]}/_index"
+  end
+
+  @doc """
   Produces the URL to query a view for a specific integer key, using the
   provided staleness setting (either :ok or :update_after).
   """
