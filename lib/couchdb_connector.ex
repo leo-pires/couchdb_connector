@@ -142,4 +142,12 @@ defmodule Couchdb.Connector do
     :: {:ok, map} | {:error, map}
   def document_by_key(db_props, view_key, :ok),
     do: View.do_document_by_key(db_props, view_key, :ok) |> as_map
+
+  @doc """
+  TODO: write!
+  """
+  @spec find(Types.db_properties, map) :: {:ok, map} | {:error, map}
+  def find(db_props, query) do
+    View.find(db_props, query) |> as_map
+  end
 end
