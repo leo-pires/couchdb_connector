@@ -118,4 +118,16 @@ defmodule Couchdb.Connector.Writer do
   defp do_destroy(url, rev) do
     Handler.handle_delete(HTTPoison.delete!(url <> "?rev=#{rev}"))
   end
+
+  @doc """
+  TODO: write!
+  """
+  @spec bulk_docs(Types.db_properties, map, boolean) :: {:ok, String.t} | {:error, String.t}
+  def bulk_docs(db_props, docs, new_edits \\ true) do
+    body = %{docs: docs, new_edits: new_edits} |> Poison.encode!
+    db_props
+    |> UrlHelper.bulk_docs_url
+    |> HTTPoison.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
+    |> Handler.handle_post(:include_headers)
+  end
 end

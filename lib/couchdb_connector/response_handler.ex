@@ -8,10 +8,6 @@ defmodule Couchdb.Connector.ResponseHandler do
   def handle_get(%{status_code: 200, body: body}),    do: {:ok,    body}
   def handle_get(%{status_code: ___, body: body}),    do: {:error, body}
 
-  @spec handle_post(%{atom => Integer, atom => String.t}) :: {:ok, String.t} | {:error, String.t}
-  def handle_post(%{status_code: 200, body: body}),   do: {:ok,    body}
-  def handle_post(%{status_code: ___, body: body}),   do: {:error, body}
-
   @spec handle_delete(%{atom => Integer, atom => String.t}) :: {:ok, String.t} | {:error, String.t}
   def handle_delete(%{status_code: 200, body: body}), do: {:ok,    body}
   def handle_delete(%{status_code: ___, body: body}), do: {:error, body}
@@ -32,4 +28,19 @@ defmodule Couchdb.Connector.ResponseHandler do
                                                       do: {:ok,    body, headers}
   def handle_put(%{status_code: ___, body: body, headers: headers}, :include_headers),
                                                       do: {:error, body, headers}
+
+  # TODO: write!
+  @spec handle_post(%{atom => Integer, atom => String.t}) :: {:ok, String.t} | {:error, String.t}
+  def handle_post(%{status_code: 200, body: body}),    do: {:ok,    body}
+  def handle_post(%{status_code: 201, body: body}),    do: {:ok,    body}
+  def handle_post(%{status_code: ___, body: body}),    do: {:error, body}
+
+  @spec handle_post(%{atom => Integer, atom => String.t, atom => String.t}, atom)
+    :: {:ok, String.t, String.t} | {:error, String.t, String.t}
+  def handle_post(%{status_code: 200, body: body, headers: headers}, :include_headers),
+                                                       do: {:ok,    body, headers}
+  def handle_post(%{status_code: 201, body: body, headers: headers}, :include_headers),
+                                                       do: {:ok,    body, headers}
+  def handle_post(%{status_code: ___, body: body, headers: headers}, :include_headers),
+                                                       do: {:error, body, headers}
 end

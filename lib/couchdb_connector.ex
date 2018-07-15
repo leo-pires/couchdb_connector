@@ -146,6 +146,14 @@ defmodule Couchdb.Connector do
   @doc """
   TODO: write!
   """
+  @spec bulk_docs(Types.db_properties, map, boolean) :: {:ok, map} | {:error, map}
+  def bulk_docs(db_props, docs, new_edits \\ true) do
+    Writer.bulk_docs(db_props, docs, new_edits) |> handle_write_response
+  end
+
+  @doc """
+  TODO: write!
+  """
   @spec find(Types.db_properties, map) :: {:ok, map} | {:error, map}
   def find(db_props, query) do
     View.find(db_props, query) |> as_map
