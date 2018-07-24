@@ -176,11 +176,11 @@ defmodule Couchdb.Connector.UrlHelper do
   defp encode_kv_pair({key, _}) when is_list(key) do
     raise ArgumentError, "encode_query/1 keys cannot be lists, got: #{inspect(key)}"
   end
-  defp encode_kv_pair({_, value}) when is_list(value) do
-    raise ArgumentError, "encode_query/1 values cannot be lists, got: #{inspect(value)}"
-  end
   defp encode_kv_pair({key, value}) do
     URI.encode_www_form(Kernel.to_string(key)) <> "=" <> encode_value(value)
+  end
+  defp encode_value(value) when is_list(value) do
+    "#{value |> Poison.encode!}"
   end
   defp encode_value(value) when is_binary(value) do
     "\"#{URI.encode_www_form(Kernel.to_string(value))}\""
