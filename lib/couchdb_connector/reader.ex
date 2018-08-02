@@ -22,6 +22,7 @@ defmodule Couchdb.Connector.Reader do
 
   alias Couchdb.Connector.Types
   alias Couchdb.Connector.UrlHelper
+  alias Couchdb.Connector.Request
   alias Couchdb.Connector.ResponseHandler, as: Handler
 
   @doc """
@@ -47,7 +48,7 @@ defmodule Couchdb.Connector.Reader do
 
   defp do_get(url) do
     url
-    |> HTTPoison.get!
+    |> Request.get!
     |> Handler.handle_get
   end
 end

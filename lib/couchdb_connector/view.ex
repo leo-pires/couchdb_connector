@@ -16,6 +16,7 @@ defmodule Couchdb.Connector.View do
   """
 
   alias Couchdb.Connector.Types
+  alias Couchdb.Connector.Request
   alias Couchdb.Connector.UrlHelper
   alias Couchdb.Connector.ResponseHandler, as: Handler
 
@@ -26,7 +27,7 @@ defmodule Couchdb.Connector.View do
   def fetch_all(db_props, design, view) do
     db_props
     |> UrlHelper.view_url(design, view)
-    |> HTTPoison.get!
+    |> Request.get!
     |> Handler.handle_get
   end
 
@@ -37,7 +38,7 @@ defmodule Couchdb.Connector.View do
   def fetch_all(db_props, design, view, query) when is_map(query) do
     db_props
     |> UrlHelper.view_url(design, view, query)
-    |> HTTPoison.get!
+    |> Request.get!
     |> Handler.handle_get
   end
 
@@ -49,7 +50,7 @@ defmodule Couchdb.Connector.View do
     body = %{queries: queries} |> Poison.encode!
     db_props
     |> UrlHelper.view_url(design, view)
-    |> HTTPoison.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
+    |> Request.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
     |> Handler.handle_post
   end
 
@@ -62,7 +63,7 @@ defmodule Couchdb.Connector.View do
   def create_view(db_props, design, code) do
     db_props
     |> UrlHelper.design_url(design)
-    |> HTTPoison.put!(code)
+    |> Request.put!(code)
     |> Handler.handle_put
   end
 
@@ -121,7 +122,7 @@ defmodule Couchdb.Connector.View do
     body = query |> Poison.encode!
     db_props
     |> UrlHelper.find_url
-    |> HTTPoison.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
+    |> Request.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
     |> Handler.handle_post
   end
 
@@ -132,13 +133,13 @@ defmodule Couchdb.Connector.View do
   def create_index(db_props, code) do
     db_props
     |> UrlHelper.index_url
-    |> HTTPoison.post!(code, [{"Content-Type", "application/json; charset=utf-8"}])
+    |> Request.post!(code, [{"Content-Type", "application/json; charset=utf-8"}])
     |> Handler.handle_post
   end
 
   defp do_document_by_key(url) do
     url
-    |> HTTPoison.get!
+    |> Request.get!
     |> Handler.handle_get
   end
 end

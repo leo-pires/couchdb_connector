@@ -46,6 +46,7 @@ defmodule Couchdb.Connector.Admin do
   """
 
   alias Couchdb.Connector.Types
+  alias Couchdb.Connector.Request
   alias Couchdb.Connector.Headers
   alias Couchdb.Connector.UrlHelper
   alias Couchdb.Connector.ResponseHandler, as: Handler
@@ -67,7 +68,7 @@ defmodule Couchdb.Connector.Admin do
   end
 
   defp do_create_user(url, json) do
-    HTTPoison.put! url, json, [Headers.json_header]
+    Request.put! url, json, [Headers.json_header]
   end
 
   defp user_to_json(user_auth, roles) do
@@ -92,7 +93,7 @@ defmodule Couchdb.Connector.Admin do
   end
 
   defp do_create_admin(url, password) do
-    HTTPoison.put! url, "\"" <> password <> "\"", [Headers.www_form_header]
+    Request.put! url, "\"" <> password <> "\"", [Headers.www_form_header]
   end
 
   @doc """
@@ -104,7 +105,7 @@ defmodule Couchdb.Connector.Admin do
   def user_info(db_props, username) do
     db_props
     |> UrlHelper.user_url(username)
-    |> HTTPoison.get!
+    |> Request.get!
     |> Handler.handle_get
   end
 
@@ -117,7 +118,7 @@ defmodule Couchdb.Connector.Admin do
   def admin_info db_props do
     db_props
     |> UrlHelper.admin_url(db_props[:user])
-    |> HTTPoison.get!
+    |> Request.get!
     |> Handler.handle_get
   end
 
@@ -144,11 +145,11 @@ defmodule Couchdb.Connector.Admin do
   end
 
   defp do_http_delete(url) do
-    HTTPoison.delete! url
+    Request.delete! url
   end
 
   defp do_http_delete(url, rev) do
-    HTTPoison.delete! url <> "?rev=#{rev}"
+    Request.delete! url <> "?rev=#{rev}"
   end
 
   @doc """
@@ -180,7 +181,7 @@ defmodule Couchdb.Connector.Admin do
   end
 
   defp do_set_security(url, json) do
-    HTTPoison.put! url, json, [Headers.json_header]
+    Request.put! url, json, [Headers.json_header]
   end
 
   defp security_to_json(admins, members) do

@@ -13,6 +13,7 @@ defmodule Couchdb.Connector.Storage do
 
   """
 
+  alias Couchdb.Connector.Request
   alias Couchdb.Connector.Headers
   alias Couchdb.Connector.UrlHelper
   alias Couchdb.Connector.ResponseHandler, as: Handler
@@ -20,20 +21,20 @@ defmodule Couchdb.Connector.Storage do
   @doc """
   Create a database with parameters as given in the db_props map.
   """
-  def storage_up db_props do
+  def storage_up(db_props) do
     db_props
     |> UrlHelper.database_url
-    |> HTTPoison.put!("{}", [Headers.json_header])
+    |> Request.put!("{}", [Headers.json_header])
     |> Handler.handle_put
   end
 
   @doc """
   Delete the database with the properties as given in the db_props map.
   """
-  def storage_down db_props do
+  def storage_down(db_props) do
     db_props
     |> UrlHelper.database_url
-    |> HTTPoison.delete!
+    |> Request.delete!
     |> Handler.handle_delete
   end
 end

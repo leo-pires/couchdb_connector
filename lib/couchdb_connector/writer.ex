@@ -22,6 +22,7 @@ defmodule Couchdb.Connector.Writer do
   """
 
   alias Couchdb.Connector.Types
+  alias Couchdb.Connector.Request
   alias Couchdb.Connector.Headers
   alias Couchdb.Connector.Reader
   alias Couchdb.Connector.UrlHelper
@@ -56,7 +57,7 @@ defmodule Couchdb.Connector.Writer do
   end
 
   defp do_create(url, json) do
-    response = HTTPoison.put!(url, json, [Headers.json_header])
+    response = Request.put!(url, json, [Headers.json_header])
     Handler.handle_put(response, :include_headers)
   end
 
@@ -93,7 +94,7 @@ defmodule Couchdb.Connector.Writer do
 
   defp do_update(url, json) do
     url
-    |> HTTPoison.put!(json, [Headers.json_header])
+    |> Request.put!(json, [Headers.json_header])
     |> Handler.handle_put(:include_headers)
   end
 
@@ -116,7 +117,7 @@ defmodule Couchdb.Connector.Writer do
   end
 
   defp do_destroy(url, rev) do
-    Handler.handle_delete(HTTPoison.delete!(url <> "?rev=#{rev}"))
+    Handler.handle_delete(Request.delete!(url <> "?rev=#{rev}"))
   end
 
   @doc """
@@ -127,7 +128,7 @@ defmodule Couchdb.Connector.Writer do
     body = %{docs: docs, new_edits: new_edits} |> Poison.encode!
     db_props
     |> UrlHelper.bulk_docs_url
-    |> HTTPoison.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
+    |> Request.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
     |> Handler.handle_post(:include_headers)
   end
 end
