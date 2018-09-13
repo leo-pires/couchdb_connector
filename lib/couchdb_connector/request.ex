@@ -6,7 +6,7 @@ defmodule Couchdb.Connector.Request do
   @hackey_opts [hackney: [:insecure]]
 
   def get!(a) do
-    HTTPoison.get!(a, [], @hackey_opts)
+    HTTPoison.get!(a, [{"Accept", "application/json"}], @hackey_opts)
   end
 
   def put!(a, b) do

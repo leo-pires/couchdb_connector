@@ -18,10 +18,10 @@ defmodule Couchdb.Connector do
   Retrieve the document given by database properties and id, returning it
   as a Map.
   """
-  @spec get(Types.db_properties, String.t) :: {:ok, map} | {:error, map}
-  def get(db_props, id) do
+  @spec get(Types.db_properties, String.t, map) :: {:ok, map} | {:error, map}
+  def get(db_props, id, query \\ %{}) do
     db_props
-    |> Reader.get(id)
+    |> Reader.get(id, query)
     |> as_map
   end
 
