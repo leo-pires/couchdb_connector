@@ -57,8 +57,8 @@ defmodule Couchdb.Connector.Writer do
   end
 
   defp do_create(url, json) do
-    response = Request.put!(url, json, [Headers.json_header])
-    Handler.handle_put(response, :include_headers)
+    Request.put(url, json, [Headers.json_header])
+    |> Handler.handle_put(:include_headers)
   end
 
   @doc """
@@ -94,7 +94,7 @@ defmodule Couchdb.Connector.Writer do
 
   defp do_update(url, json) do
     url
-    |> Request.put!(json, [Headers.json_header])
+    |> Request.put(json, [Headers.json_header])
     |> Handler.handle_put(:include_headers)
   end
 
@@ -117,7 +117,8 @@ defmodule Couchdb.Connector.Writer do
   end
 
   defp do_destroy(url, rev) do
-    Handler.handle_delete(Request.delete!(url <> "?rev=#{rev}"))
+    Request.delete(url <> "?rev=#{rev}")
+    |> Handler.handle_delete
   end
 
   @doc """
@@ -128,7 +129,7 @@ defmodule Couchdb.Connector.Writer do
     body = %{docs: docs, new_edits: new_edits} |> Poison.encode!
     db_props
     |> UrlHelper.bulk_docs_url
-    |> Request.post!(body, [{"Content-Type", "application/json; charset=utf-8"}])
+    |> Request.post(body, [{"Content-Type", "application/json; charset=utf-8"}])
     |> Handler.handle_post(:include_headers)
   end
 end

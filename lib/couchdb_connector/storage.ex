@@ -24,7 +24,7 @@ defmodule Couchdb.Connector.Storage do
   def storage_up(db_props) do
     db_props
     |> UrlHelper.database_url
-    |> Request.put!("{}", [Headers.json_header])
+    |> Request.put("{}", [Headers.json_header])
     |> Handler.handle_put
   end
 
@@ -34,7 +34,7 @@ defmodule Couchdb.Connector.Storage do
   def storage_down(db_props) do
     db_props
     |> UrlHelper.database_url
-    |> Request.delete!
+    |> Request.delete
     |> Handler.handle_delete
   end
 end

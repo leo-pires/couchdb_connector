@@ -48,7 +48,7 @@ defmodule Couchdb.Connector.Reader do
 
   defp do_get(url) do
     url
-    |> Request.get!
+    |> Request.get
     |> Handler.handle_get
   end
 end

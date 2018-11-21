@@ -68,14 +68,16 @@ defmodule Couchdb.Connector.Admin do
   end
 
   defp do_create_user(url, json) do
-    Request.put! url, json, [Headers.json_header]
+    Request.put(url, json, [Headers.json_header])
   end
 
   defp user_to_json(user_auth, roles) do
-    Poison.encode! %{"name" => user_auth[:user],
-                     "password" => user_auth[:password],
-                     "roles" => roles,
-                     "type" => "user"}
+    Poison.encode!(%{
+      "name" => user_auth[:user],
+      "password" => user_auth[:password],
+      "roles" => roles,
+      "type" => "user"
+    })
   end
 
   @doc """
@@ -83,17 +85,17 @@ defmodule Couchdb.Connector.Admin do
   the function will respond with an empty body. In case of failures (e.g.
   if admin already exists), the response will be {:error, body, headers}.
   """
-  @spec create_admin(Types.db_properties, Types.user_info)
+  @spec create_admin(Types.db_properties, String.t, Types.user_info)
     :: {:ok, String.t, Types.headers} | {:error, String.t, Types.headers}
-  def create_admin(db_props, admin_info) do
+  def create_admin(db_props, node, admin_info) do
     db_props
-    |> UrlHelper.admin_url(admin_info[:user])
+    |> UrlHelper.admin_url(node, admin_info[:user])
     |> do_create_admin(admin_info[:password])
     |> Handler.handle_put(:include_headers)
   end
 
   defp do_create_admin(url, password) do
-    Request.put! url, "\"" <> password <> "\"", [Headers.www_form_header]
+    Request.put(url, "\"" <> password <> "\"", [Headers.www_form_header])
   end
 
   @doc """
@@ -105,7 +107,7 @@ defmodule Couchdb.Connector.Admin do
   def user_info(db_props, username) do
     db_props
     |> UrlHelper.user_url(username)
-    |> Request.get!
+    |> Request.get
     |> Handler.handle_get
   end
 
@@ -113,12 +115,12 @@ defmodule Couchdb.Connector.Admin do
   Returns hashed information for the given admin or an error in case the admin
   does not exist or if the given credentials are wrong.
   """
-  @spec admin_info(Types.db_properties)
+  @spec admin_info(Types.db_properties, String.t)
     :: {:ok, String.t} | {:error, String.t}
-  def admin_info db_props do
+  def admin_info db_props, node do
     db_props
-    |> UrlHelper.admin_url(db_props[:user])
-    |> Request.get!
+    |> UrlHelper.admin_url(node, db_props[:user])
+    |> Request.get
     |> Handler.handle_get
   end
 
@@ -145,11 +147,11 @@ defmodule Couchdb.Connector.Admin do
   end
 
   defp do_http_delete(url) do
-    Request.delete! url
+    Request.delete(url)
   end
 
   defp do_http_delete(url, rev) do
-    Request.delete! url <> "?rev=#{rev}"
+    Request.delete(url <> "?rev=#{rev}")
   end
 
   @doc """
@@ -181,12 +183,12 @@ defmodule Couchdb.Connector.Admin do
   end
 
   defp do_set_security(url, json) do
-    Request.put! url, json, [Headers.json_header]
+    Request.put(url, json, [Headers.json_header])
   end
 
   defp security_to_json(admins, members) do
-    Poison.encode!(
-    %{:admins  => %{:names => admins,  :roles => ["admins"]},
+    Poison.encode!(%{
+      :admins  => %{:names => admins,  :roles => ["admins"]},
       :members => %{:names => members, :roles => ["members"]}
     })
   end

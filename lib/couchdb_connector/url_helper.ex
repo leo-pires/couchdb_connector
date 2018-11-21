@@ -20,12 +20,11 @@ defmodule Couchdb.Connector.UrlHelper do
     @default_db_properties |> Map.merge(db_props) |> do_database_server_url
   end
 
-  defp do_database_server_url db_props = %{user: nil, username: nil} do
+  defp do_database_server_url db_props = %{user: nil, password: nil} do
     "#{db_props[:protocol]}://#{db_props[:hostname]}:#{db_props[:port]}"
   end
-
   defp do_database_server_url db_props do
-    "#{db_props[:protocol]}://#{db_props[:user] || db_props[:username]}:#{db_props[:password]}@#{db_props[:hostname]}:#{db_props[:port]}"
+    "#{db_props[:protocol]}://#{db_props[:user]}:#{db_props[:password]}@#{db_props[:hostname]}:#{db_props[:port]}"
   end
 
   @doc """
@@ -130,9 +129,6 @@ defmodule Couchdb.Connector.UrlHelper do
     "#{view_base_url}?key=#{URI.encode_www_form(Integer.to_string(key))}&stale=#{Atom.to_string(stale)}"
   end
 
-  @doc """
-  Produces the URL to query a view for a specific key, using the provided staleness setting (either :ok or :update_after).
-  """
   @spec query_path(String.t, String.t, atom) :: String.t
   def query_path(view_base_url, key, stale) do
     "#{view_base_url}?key=\"#{URI.encode_www_form(key)}\"&stale=#{Atom.to_string(stale)}"
@@ -149,17 +145,17 @@ defmodule Couchdb.Connector.UrlHelper do
   @doc """
   Produces the URL to a specific admin.
   """
-  @spec admin_url(Types.db_properties, String.t) :: String.t
-  def admin_url db_props, username do
-    "#{database_server_url(db_props)}/_config/admins/#{username}"
+  @spec admin_url(Types.db_properties, String.t, String.t) :: String.t
+  def admin_url db_props, node, username do
+    "#{database_server_url(db_props)}/_node/#{node}/_config/admins/#{username}"
   end
 
   @doc """
   Produces the URL to a specific admin, including basic auth params.
   """
-  @spec admin_url(Types.db_properties, String.t, String.t) :: String.t
-  def admin_url db_props, admin_name, password do
-    admin_url(Map.merge(db_props, %{user: admin_name, password: password}), admin_name)
+  @spec admin_url(Types.db_properties, String.t, String.t, String.t) :: String.t
+  def admin_url db_props, node, admin_name, password do
+    admin_url(node, Map.merge(db_props, %{user: admin_name, password: password}), admin_name)
   end
 
   @doc """
