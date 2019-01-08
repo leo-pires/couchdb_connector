@@ -67,11 +67,19 @@ defmodule Couchdb.Connector.UrlHelper do
   end
 
   @doc """
+  TODO: write!
+  """
+  @spec design_id(String.t) :: String.t
+  def design_id design do
+    "_design/#{design}"
+  end
+
+  @doc """
   Produces the URL to a specific design document.
   """
   @spec design_url(Types.db_properties, String.t) :: String.t
   def design_url db_props, design do
-    "#{database_server_url(db_props)}/#{db_props[:database]}/_design/#{design}"
+    "#{database_server_url(db_props)}/#{db_props[:database]}/#{design_id(design)}"
   end
 
   @doc """

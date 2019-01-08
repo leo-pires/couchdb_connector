@@ -125,19 +125,13 @@ defmodule Couchdb.Connector do
   Find and return one document with given key in given view. Will return a
   Map with an empty list of documents if no document with given
   key exists.
-  Staleness is set to 'update_after'.
+  Staleness is set to 'ok' or 'update_after'.
   """
   @spec document_by_key(Types.db_properties, Types.view_key, :update_after)
     :: {:ok, map} | {:error, map}
   def document_by_key(db_props, view_key, :update_after),
     do: View.do_document_by_key(db_props, view_key, :update_after) |> as_map
 
-  @doc """
-  Find and return one document with given key in given view. Will return a
-  Map with an empty list of documents if no document with given
-  key exists.
-  Staleness is set to 'ok'.
-  """
   @spec document_by_key(Types.db_properties, Types.view_key, :ok)
     :: {:ok, map} | {:error, map}
   def document_by_key(db_props, view_key, :ok),

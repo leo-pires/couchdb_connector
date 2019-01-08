@@ -31,9 +31,6 @@ defmodule Couchdb.Connector.View do
     |> Handler.handle_get
   end
 
-  @doc """
-  TODO: write!
-  """
   @spec fetch_all(Types.db_properties, String.t, String.t, map) :: {:ok, String.t} | {:error, String.t}
   def fetch_all(db_props, design, view, query) when is_map(query) do
     db_props
@@ -55,19 +52,6 @@ defmodule Couchdb.Connector.View do
   end
 
   @doc """
-  Create a view with the given JavaScript code in the given design document.
-  Please note that Admin credentials are required for this operation in case
-  your database uses authentication.
-  """
-  @spec create_view(Types.db_properties, String.t, String.t) :: {:ok, String.t} | {:error, String.t}
-  def create_view(db_props, design, code) do
-    db_props
-    |> UrlHelper.design_url(design)
-    |> Request.put(code)
-    |> Handler.handle_put
-  end
-
-  @doc """
   Find and return one document with given key in given view. Will return a
   JSON document with an empty list of documents if no document with given
   key exists.
@@ -77,12 +61,6 @@ defmodule Couchdb.Connector.View do
   def document_by_key(db_props, view_key),
     do: document_by_key(db_props, view_key, :update_after)
 
-  @doc """
-  Find and return one document with given key in given view. Will return a
-  JSON document with an empty list of documents if no document with given
-  key exists.
-  Staleness is set to 'update_after'.
-  """
   @spec document_by_key(Types.db_properties, Types.view_key, :update_after)
     :: {:ok, String.t} | {:error, String.t}
   def document_by_key(db_props, view_key, :update_after),
@@ -124,6 +102,34 @@ defmodule Couchdb.Connector.View do
     |> UrlHelper.find_url
     |> Request.post(body, [{"Content-Type", "application/json; charset=utf-8"}])
     |> Handler.handle_post
+  end
+
+  @doc """
+  Create a view with the given JavaScript code in the given design document.
+  Please note that Admin credentials are required for this operation in case
+  your database uses authentication.
+  """
+  @spec create_view(Types.db_properties, String.t, String.t) :: {:ok, String.t} | {:error, String.t}
+  def create_view(db_props, design, code) do
+    db_props
+    |> UrlHelper.design_url(design)
+    |> Request.put(code)
+    |> Handler.handle_put
+  end
+
+  @doc """
+  TODO: write!
+  """
+  @spec drop_view(Types.db_properties, String.t) :: {:ok, String.t} | {:error, String.t}
+  def drop_view(db_props, design) do
+    design_id = UrlHelper.design_id(design)
+    case Couchdb.Connector.get(db_props, design_id) do
+      {:ok, doc} ->
+        rev = doc["_rev"]
+        Couchdb.Connector.Writer.destroy(db_props, design_id, rev)
+      _ ->
+        {:error, :stale}
+    end
   end
 
   @doc """
