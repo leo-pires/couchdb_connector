@@ -18,6 +18,7 @@ defimpl Couchdb.Connector.AsMap, for: Tuple do
   def as_map(tuple) do
     case tuple do
       {:ok, document} -> {:ok, Couchdb.Connector.AsMap.as_map(document)}
+      {:error, reason} when is_atom(reason) -> {:error, reason}
       {:error, details} -> {:error, Couchdb.Connector.AsMap.as_map(details)}
     end
   end

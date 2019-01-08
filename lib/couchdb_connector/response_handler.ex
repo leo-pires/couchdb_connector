@@ -58,8 +58,8 @@ defmodule Couchdb.Connector.ResponseHandler do
     {:error, reason, nil}
   end
 
-  # TODO: write!
-  @spec handle_post(%{atom => Integer, atom => String.t}) :: {:ok, String.t} | {:error, String.t}
+  @spec handle_post(%{atom => Integer, atom => String.t})
+    :: {:ok, String.t} | {:error, String.t}
   def handle_post({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
     {:ok, body}
   end
