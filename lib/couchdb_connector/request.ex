@@ -3,7 +3,7 @@ defmodule Couchdb.Connector.Request do
   TODO: docs
   """
 
-  @hackey_opts [hackney: [:insecure]]
+  @hackey_opts [hackney: [:insecure, timeout: 60000, recv_timeout: 60000]]
 
   def get(a) do
     HTTPoison.get(a, [{"Accept", "application/json"}], @hackey_opts)
