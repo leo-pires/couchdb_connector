@@ -190,7 +190,7 @@ defmodule Couchdb.Connector.UrlHelper do
     URI.encode_www_form(Kernel.to_string(key)) <> "=" <> encode_value(value)
   end
   defp encode_value(value) when is_list(value) do
-    "#{value |> Poison.encode!}"
+    "#{value |> Poison.encode! |> URI.encode_www_form}"
   end
   defp encode_value(value) when is_binary(value) do
     "\"#{URI.encode_www_form(Kernel.to_string(value))}\""
