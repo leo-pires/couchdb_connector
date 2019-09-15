@@ -105,6 +105,17 @@ defmodule Couchdb.Connector.View do
   end
 
   @doc """
+  TODO: write!
+  """
+  @spec fetch_view(Types.db_properties, String.t) :: {:ok, String.t} | {:error, String.t}
+  def fetch_view(db_props, design) do
+    db_props
+    |> UrlHelper.design_url(design)
+    |> Request.get
+    |> Handler.handle_get
+  end
+
+  @doc """
   Create a view with the given JavaScript code in the given design document.
   Please note that Admin credentials are required for this operation in case
   your database uses authentication.
@@ -127,8 +138,7 @@ defmodule Couchdb.Connector.View do
       {:ok, doc} ->
         rev = doc["_rev"]
         Couchdb.Connector.Writer.destroy(db_props, design_id, rev)
-      _ ->
-        {:error, :stale}
+      {:error, reason} -> {:error, reason}
     end
   end
 
