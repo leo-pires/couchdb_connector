@@ -91,6 +91,14 @@ defmodule Couchdb.Connector.UrlHelper do
   end
 
   @doc """
+  Produces the URL for multiple queries to a specific view from a given design document.
+  """
+  @spec view_url(Types.db_properties, String.t, String.t, list(map)) :: String.t
+  def view_url(db_props, design, view, queries) when is_list(queries) do
+    "#{design_url(db_props, design)}/_view/#{view}/queries"
+  end
+
+  @doc """
   TODO: write!
   """
   @spec view_url(Types.db_properties, String.t, String.t, map) :: String.t
