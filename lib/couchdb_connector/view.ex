@@ -46,7 +46,7 @@ defmodule Couchdb.Connector.View do
   def fetch_all(db_props, design, view, queries) when is_list(queries) do
     body = %{queries: queries} |> Poison.encode!
     db_props
-    |> UrlHelper.view_url(design, view)
+    |> UrlHelper.view_url(design, view, queries)
     |> Request.post(body, [{"Content-Type", "application/json; charset=utf-8"}])
     |> Handler.handle_post
   end
