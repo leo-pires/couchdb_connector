@@ -56,3 +56,10 @@ defimpl Couchdb.Connector.AsMap, for: List do
     Enum.into(tuples, %{})
   end
 end
+
+# Maps are maps
+defimpl Couchdb.Connector.AsMap, for: Map do
+  def as_map(map) do
+    map
+  end
+end
