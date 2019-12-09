@@ -22,12 +22,13 @@ defmodule Couchdb.Connector.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 0.13"},
-      {:excoveralls, "~> 0.9", only: [:dev, :test]},
-      {:credo, "~> 0.9", only: [:dev, :test]},
-      {:earmark, "~> 1.2", only: :dev},
+      {:httpoison, "~> 1.6"},
+      {:poison, "~> 4.0"},
+      {:excoveralls, "~> 0.12", only: [:dev, :test]},
+      {:credo, "~> 1.1", only: [:dev, :test]},
+      {:earmark, "~> 1.4", only: :dev},
       {:ex_doc, "~> 0.21", only: :dev},
-      {:dialyxir, "~> 0.5", only: [:dev]}
+      {:dialyxir, "~> 0.5.1", only: [:dev]}
     ]
   end
 

@@ -99,7 +99,7 @@ defmodule Couchdb.Connector.Writer do
   end
 
   defp parse_and_extract_id(json) do
-    doc_map = Poison.Parser.parse!(json)
+    doc_map = Poison.Parser.parse!(json, %{})
     {doc_map, Map.fetch(doc_map, "_id")}
   end
 
