@@ -20,10 +20,9 @@ defmodule Couchdb.Connector.UrlHelper do
     @default_db_properties |> Map.merge(db_props) |> do_database_server_url
   end
 
-  defp do_database_server_url db_props = %{user: nil} do
+  defp do_database_server_url db_props = %{user: nil, password: nil} do
     "#{db_props[:protocol]}://#{db_props[:hostname]}:#{db_props[:port]}"
   end
-
   defp do_database_server_url db_props do
     "#{db_props[:protocol]}://#{db_props[:user]}:#{db_props[:password]}@#{db_props[:hostname]}:#{db_props[:port]}"
   end
@@ -40,8 +39,14 @@ defmodule Couchdb.Connector.UrlHelper do
   Produces the URL to a specific document contained in given database.
   """
   @spec document_url(Types.db_properties, String.t) :: String.t
-  def document_url db_props, doc_id do
-    "#{database_server_url(db_props)}/#{db_props[:database]}/#{doc_id}"
+  def document_url db_props, doc_id, query \\ %{} do
+    query_str =
+      if map_size(query) > 0 do
+        "?#{encode_query(query)}"
+      else
+        ""
+      end
+    "#{database_server_url(db_props)}/#{db_props[:database]}/#{doc_id}#{query_str}"
   end
 
   @doc """
@@ -62,11 +67,19 @@ defmodule Couchdb.Connector.UrlHelper do
   end
 
   @doc """
+  TODO: write!
+  """
+  @spec design_id(String.t) :: String.t
+  def design_id design do
+    "_design/#{design}"
+  end
+
+  @doc """
   Produces the URL to a specific design document.
   """
   @spec design_url(Types.db_properties, String.t) :: String.t
   def design_url db_props, design do
-    "#{database_server_url(db_props)}/#{db_props[:database]}/_design/#{design}"
+    "#{database_server_url(db_props)}/#{db_props[:database]}/#{design_id(design)}"
   end
 
   @doc """
@@ -78,6 +91,52 @@ defmodule Couchdb.Connector.UrlHelper do
   end
 
   @doc """
+  Produces the URL for multiple queries to a specific view from a given design document.
+  """
+  @spec view_url(Types.db_properties, String.t, String.t, list(map)) :: String.t
+  def view_url(db_props, design, view, queries) when is_list(queries) do
+    "#{design_url(db_props, design)}/_view/#{view}/queries"
+  end
+
+  @doc """
+  TODO: write!
+  """
+  @spec view_url(Types.db_properties, String.t, String.t, map) :: String.t
+  def view_url db_props, design, view, query do
+    query_str =
+      if map_size(query) > 0 do
+        "?#{encode_query(query)}"
+      else
+        ""
+      end
+    "#{view_url(db_props, design, view)}#{query_str}"
+  end
+
+  @doc """
+  TODO: write!
+  """
+  @spec find_url(Types.db_properties) :: String.t
+  def find_url db_props do
+    "#{database_server_url(db_props)}/#{db_props[:database]}/_find"
+  end
+
+  @doc """
+  TODO: write!
+  """
+  @spec index_url(Types.db_properties) :: String.t
+  def index_url db_props do
+    "#{database_server_url(db_props)}/#{db_props[:database]}/_index"
+  end
+
+  @doc """
+  TODO: write!
+  """
+  @spec bulk_docs_url(Types.db_properties) :: String.t
+  def bulk_docs_url db_props do
+    "#{database_server_url(db_props)}/#{db_props[:database]}/_bulk_docs"
+  end
+
+  @doc """
   Produces the URL to query a view for a specific integer key, using the
   provided staleness setting (either :ok or :update_after).
   """
@@ -86,9 +145,6 @@ defmodule Couchdb.Connector.UrlHelper do
     "#{view_base_url}?key=#{URI.encode_www_form(Integer.to_string(key))}&stale=#{Atom.to_string(stale)}"
   end
 
-  @doc """
-  Produces the URL to query a view for a specific key, using the provided staleness setting (either :ok or :update_after).
-  """
   @spec query_path(String.t, String.t, atom) :: String.t
   def query_path(view_base_url, key, stale) do
     "#{view_base_url}?key=\"#{URI.encode_www_form(key)}\"&stale=#{Atom.to_string(stale)}"
@@ -105,17 +161,17 @@ defmodule Couchdb.Connector.UrlHelper do
   @doc """
   Produces the URL to a specific admin.
   """
-  @spec admin_url(Types.db_properties, String.t) :: String.t
-  def admin_url db_props, username do
-    "#{database_server_url(db_props)}/_config/admins/#{username}"
+  @spec admin_url(Types.db_properties, String.t, String.t) :: String.t
+  def admin_url db_props, node, username do
+    "#{database_server_url(db_props)}/_node/#{node}/_config/admins/#{username}"
   end
 
   @doc """
   Produces the URL to a specific admin, including basic auth params.
   """
-  @spec admin_url(Types.db_properties, String.t, String.t) :: String.t
-  def admin_url db_props, admin_name, password do
-    admin_url(Map.merge(db_props, %{user: admin_name, password: password}), admin_name)
+  @spec admin_url(Types.db_properties, String.t, String.t, String.t) :: String.t
+  def admin_url db_props, node, admin_name, password do
+    admin_url(node, Map.merge(db_props, %{user: admin_name, password: password}), admin_name)
   end
 
   @doc """
@@ -126,4 +182,29 @@ defmodule Couchdb.Connector.UrlHelper do
   def security_url db_props do
     "#{database_url(db_props)}/_security"
   end
+
+  @doc """
+  TODO: write!
+  """
+  @spec encode_query(map) :: String.t
+  def encode_query(map) do
+    Enum.map_join(map, "&", &encode_kv_pair/1)
+  end
+
+  defp encode_kv_pair({key, _}) when is_list(key) do
+    raise ArgumentError, "encode_query/1 keys cannot be lists, got: #{inspect(key)}"
+  end
+  defp encode_kv_pair({key, value}) do
+    URI.encode_www_form(Kernel.to_string(key)) <> "=" <> encode_value(value)
+  end
+  defp encode_value(value) when is_list(value) do
+    "#{value |> Poison.encode! |> URI.encode_www_form}"
+  end
+  defp encode_value(value) when is_binary(value) do
+    "\"#{URI.encode_www_form(Kernel.to_string(value))}\""
+  end
+  defp encode_value(value) do
+    URI.encode_www_form(Kernel.to_string(value))
+  end
+
 end

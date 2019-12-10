@@ -8,7 +8,7 @@ defmodule Couchdb.Connector.TestPrep do
 
   def ensure_database do
     {:ok, _} = TestSupport.retry_on_error(fn() ->
-      HTTPoison.put "#{TestConfig.database_url()}", "{}", [Headers.json_header]
+      HTTPoison.put("#{TestConfig.database_url()}", "{}", [Headers.json_header])
     end)
   end
 
@@ -20,13 +20,13 @@ defmodule Couchdb.Connector.TestPrep do
 
   def ensure_document(doc, id) do
     {:ok, _} = TestSupport.retry_on_error(fn() ->
-      HTTPoison.put "#{TestConfig.database_url()}/#{id}", doc, [Headers.json_header]
+      HTTPoison.put("#{TestConfig.database_url()}/#{id}", doc, [Headers.json_header])
     end)
   end
 
   def ensure_view(design_name, code) do
     {:ok, _} = TestSupport.retry_on_error(fn() ->
-      HTTPoison.put "#{TestConfig.database_url()}/_design/#{design_name}", code, [Headers.json_header]
+      HTTPoison.put("#{TestConfig.database_url()}/_design/#{design_name}", code, [Headers.json_header])
     end)
   end
 
@@ -48,7 +48,7 @@ defmodule Couchdb.Connector.TestPrep do
   end
 
   def delete_test_admin do
-    case Admin.admin_info(Map.merge(TestConfig.database_properties(), TestConfig.test_admin())) do
+    case Admin.admin_info(Map.merge(TestConfig.database_properties(), TestConfig.test_admin()), "_local") do
       {:ok, _} ->
         HTTPoison.delete(UrlHelper.admin_url(TestConfig.database_properties(), "anna", "secret"))
       {:error, body} ->
@@ -58,7 +58,7 @@ defmodule Couchdb.Connector.TestPrep do
 
   def ensure_test_admin do
     TestSupport.retry_on_error(fn() ->
-      Admin.create_admin(TestConfig.database_properties(), TestConfig.test_admin())
+      Admin.create_admin(TestConfig.database_properties(), "_local", TestConfig.test_admin())
     end)
   end
 

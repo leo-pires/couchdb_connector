@@ -18,10 +18,10 @@ defmodule Couchdb.Connector do
   Retrieve the document given by database properties and id, returning it
   as a Map.
   """
-  @spec get(Types.db_properties, String.t) :: {:ok, map} | {:error, map}
-  def get(db_props, id) do
+  @spec get(Types.db_properties, String.t, map) :: {:ok, map} | {:error, map}
+  def get(db_props, id, query \\ %{}) do
     db_props
-    |> Reader.get(id)
+    |> Reader.get(id, query)
     |> as_map
   end
 
@@ -104,6 +104,14 @@ defmodule Couchdb.Connector do
   end
 
   @doc """
+  TODO: write!
+  """
+  @spec fetch_all(Types.db_properties, String.t, String.t, map | list(map)) :: {:ok, map} | {:error, map}
+  def fetch_all(db_props, design, view, query) do
+    View.fetch_all(db_props, design, view, query) |> as_map
+  end
+
+  @doc """
   Find and return one document with given key in given view. Will return a
   a Map with an empty list of documents if no document with given
   key exists.
@@ -117,21 +125,31 @@ defmodule Couchdb.Connector do
   Find and return one document with given key in given view. Will return a
   Map with an empty list of documents if no document with given
   key exists.
-  Staleness is set to 'update_after'.
+  Staleness is set to 'ok' or 'update_after'.
   """
   @spec document_by_key(Types.db_properties, Types.view_key, :update_after)
     :: {:ok, map} | {:error, map}
   def document_by_key(db_props, view_key, :update_after),
     do: View.do_document_by_key(db_props, view_key, :update_after) |> as_map
 
-  @doc """
-  Find and return one document with given key in given view. Will return a
-  Map with an empty list of documents if no document with given
-  key exists.
-  Staleness is set to 'ok'.
-  """
   @spec document_by_key(Types.db_properties, Types.view_key, :ok)
     :: {:ok, map} | {:error, map}
   def document_by_key(db_props, view_key, :ok),
     do: View.do_document_by_key(db_props, view_key, :ok) |> as_map
+
+  @doc """
+  TODO: write!
+  """
+  @spec bulk_docs(Types.db_properties, map, boolean) :: {:ok, map} | {:error, map}
+  def bulk_docs(db_props, docs, new_edits \\ true) do
+    Writer.bulk_docs(db_props, docs, new_edits) |> handle_write_response
+  end
+
+  @doc """
+  TODO: write!
+  """
+  @spec find(Types.db_properties, map) :: {:ok, map} | {:error, map}
+  def find(db_props, query) do
+    View.find(db_props, query) |> as_map
+  end
 end
