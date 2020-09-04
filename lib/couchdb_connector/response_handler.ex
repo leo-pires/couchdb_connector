@@ -5,7 +5,7 @@ defmodule Couchdb.Connector.ResponseHandler do
   """
 
   @spec handle_get(%{atom => Integer, atom => String.t}) :: {:ok, String.t} | {:error, String.t}
-  def handle_get({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
+  def handle_get({:ok, %HTTPoison.Response{status_code: status_code, body: body}}) when status_code in [200, 201, 202] do
     {:ok, body}
   end
   def handle_get({:ok, %HTTPoison.Response{status_code: _, body: body}}) do
@@ -16,7 +16,7 @@ defmodule Couchdb.Connector.ResponseHandler do
   end
 
   @spec handle_delete(%{atom => Integer, atom => String.t}) :: {:ok, String.t} | {:error, String.t}
-  def handle_delete({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
+  def handle_delete({:ok, %HTTPoison.Response{status_code: status_code, body: body}}) when status_code in [200, 201, 202] do
     {:ok, body}
   end
   def handle_delete({:ok, %HTTPoison.Response{status_code: _, body: body}}) do
@@ -30,10 +30,7 @@ defmodule Couchdb.Connector.ResponseHandler do
   # CouchDB insists on returning 200 for a successful PUT when it comes
   # to creating admins.
   @spec handle_put(%{atom => Integer, atom => String.t}) :: {:ok, String.t} | {:error, String.t}
-  def handle_put({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    {:ok, body}
-  end
-  def handle_put({:ok, %HTTPoison.Response{status_code: 201, body: body}}) do
+  def handle_put({:ok, %HTTPoison.Response{status_code: status_code, body: body}}) when status_code in [200, 201, 202] do
     {:ok, body}
   end
   def handle_put({:ok, %HTTPoison.Response{status_code: _, body: body}}) do
@@ -45,10 +42,7 @@ defmodule Couchdb.Connector.ResponseHandler do
 
   @spec handle_put(%{atom => Integer, atom => String.t, atom => String.t}, atom)
     :: {:ok, String.t, String.t} | {:error, String.t, String.t | nil}
-  def handle_put({:ok, %HTTPoison.Response{status_code: 200, body: body, headers: headers}}, :include_headers) do
-    {:ok, body, headers}
-  end
-  def handle_put({:ok, %HTTPoison.Response{status_code: 201, body: body, headers: headers}}, :include_headers) do
+  def handle_put({:ok, %HTTPoison.Response{status_code: status_code, body: body, headers: headers}}, :include_headers) when status_code in [200, 201, 202] do
     {:ok, body, headers}
   end
   def handle_put({:ok, %HTTPoison.Response{status_code: _, body: body, headers: headers}}, :include_headers) do
@@ -60,10 +54,7 @@ defmodule Couchdb.Connector.ResponseHandler do
 
   @spec handle_post(%{atom => Integer, atom => String.t})
     :: {:ok, String.t} | {:error, String.t}
-  def handle_post({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    {:ok, body}
-  end
-  def handle_post({:ok, %HTTPoison.Response{status_code: 201, body: body}}) do
+  def handle_post({:ok, %HTTPoison.Response{status_code: status_code, body: body}}) when status_code in [200, 201, 202] do
     {:ok, body}
   end
   def handle_post({:ok, %HTTPoison.Response{status_code: _, body: body}}) do
@@ -75,10 +66,7 @@ defmodule Couchdb.Connector.ResponseHandler do
 
   @spec handle_post(%{atom => Integer, atom => String.t, atom => String.t}, atom)
     :: {:ok, String.t, String.t} | {:error, String.t, String.t | nil}
-  def handle_post({:ok, %HTTPoison.Response{status_code: 200, body: body, headers: headers}}, :include_headers) do
-    {:ok, body, headers}
-  end
-  def handle_post({:ok, %HTTPoison.Response{status_code: 201, body: body, headers: headers}}, :include_headers) do
+  def handle_post({:ok, %HTTPoison.Response{status_code: status_code, body: body, headers: headers}}, :include_headers) when status_code in [200, 201, 202] do
     {:ok, body, headers}
   end
   def handle_post({:ok, %HTTPoison.Response{status_code: _, body: body, headers: headers}}, :include_headers) do
